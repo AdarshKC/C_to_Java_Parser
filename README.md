@@ -7,4 +7,4 @@
 ### Ankit Kumar [github.com/Weap0nX]
 ### Adarsh Chaudhary [github.com/AdarshKC]
 
-[https://shinchangame.000webhostapp.com/]
+[github.com/Weap0nX]
