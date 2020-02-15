@@ -1,7 +1,6 @@
-
-
 /** C 2011 grammar built from the C11 Spec */
 grammar C;
+
 
 primaryExpression
     :   Identifier
@@ -429,7 +428,6 @@ staticAssertDeclaration
 statement
     :   labeledStatement
     |   compoundStatement
-    |   declaration
     |   expressionStatement
     |   selectionStatement
     |   iterationStatement
@@ -499,8 +497,21 @@ jumpStatement
     ;
 
 compilationUnit
-    :   translationUnit? EOF
+    :   header translationUnit? EOF
     ;
+
+header
+	: include*
+	|
+	;
+
+include
+	:	'#include' '<' LIB* '>'
+	;
+
+LIB
+	:	[.]
+	;
 
 translationUnit
     :   externalDeclaration
@@ -815,7 +826,6 @@ CChar
     :   ~['\\\r\n]
     |   EscapeSequence
     ;
-
 fragment
 EscapeSequence
     :   SimpleEscapeSequence
@@ -823,28 +833,23 @@ EscapeSequence
     |   HexadecimalEscapeSequence
     |   UniversalCharacterName
     ;
-
 fragment
 SimpleEscapeSequence
     :   '\\' ['"?abfnrtv\\]
     ;
-
 fragment
 OctalEscapeSequence
     :   '\\' OctalDigit
     |   '\\' OctalDigit OctalDigit
     |   '\\' OctalDigit OctalDigit OctalDigit
     ;
-
 fragment
 HexadecimalEscapeSequence
     :   '\\x' HexadecimalDigit+
     ;
-
 StringLiteral
     :   EncodingPrefix? '"' SCharSequence? '"'
     ;
-
 fragment
 EncodingPrefix
     :   'u8'
@@ -852,12 +857,10 @@ EncodingPrefix
     |   'U'
     |   'L'
     ;
-
 fragment
 SCharSequence
     :   SChar+
     ;
-
 fragment
 SChar
     :   ~["\\\r\n]
@@ -868,6 +871,11 @@ SChar
 
 ComplexDefine
     :   '#' Whitespace? 'define'  ~[#]*
+        -> skip
+    ;
+
+IncludeDirective
+    :   '#' Whitespace? 'include' Whitespace? (('"' ~[\r\n]* '"') | ('<' ~[\r\n]* '>' )) Whitespace? Newline
         -> skip
     ;
 
