@@ -31,12 +31,19 @@ def main(argv):
     print("package demo;\n\npublic class DemoTranslation {\n", file=result, end="")
     tab = 0
     beginFlag = 1
+    argFlag = 0
+    ignore = 0
+    funFlag = 0
 
     while len(contextList) > 0:
 
         t = 0
         firstChild = contextList[0]
 
+        if str(type(firstChild)) == "<class 'gen.CParser.CParser.FunctionDefinitionContext'>":
+            funFlag = 1
+
+        # "<class 'gen.CParser.CParser.TypeSpecifierContext'>"
 
         contextList.pop(0)
         if firstChild.getChildCount() > 0:
@@ -45,12 +52,10 @@ def main(argv):
                 t = t + 1
         elif firstChild.getChildCount() == 0:
             if beginFlag == 1:
-               # print("Tab-"+str(tab), file=result, end="")
                 for x in range(tab):
                     print("\t", file=result, end="")
                 if (firstChild.getText() != "}") and beginFlag == 1:
                     print("\t", file=result, end="")
-
             if firstChild.getText() in [";"]:
                 print(firstChild.getText(), file=result, end="\n")
                 beginFlag = 1
@@ -58,13 +63,30 @@ def main(argv):
                 print(firstChild.getText(), file=result, end="\n")
                 tab += 1
                 beginFlag = 1
+            elif firstChild.getText() in ["int", "void"] and funFlag == 1:
+                print("public static void", file=result, end=" ")
+                beginFlag = 0
+                funFlag = 0
+            elif firstChild.getText() in ["main"]:
+                print(str(type(firstChild)))
+                print(firstChild.getText(), file=result, end=" ")
+                argFlag = 1
             elif firstChild.getText() in ["}"]:
                 print(firstChild.getText(), file=result, end="\n")
                 tab -= 1
                 beginFlag = 1
-            else:
+            elif firstChild.getText() in ["("] and argFlag == 1:
+                print(firstChild.getText(), file=result, end="")
+                ignore = 1
+            elif firstChild.getText() in [")"] and argFlag == 1:
+                print("String[] args", file=result, end="")
                 print(firstChild.getText(), file=result, end=" ")
-                beginFlag = 0
+                ignore = 0
+                argFlag = 0
+            else:
+                if ignore == 0:
+                    print(firstChild.getText(), file=result, end=" ")
+                    beginFlag = 0
 
     print("}", file=result, end="")
 
