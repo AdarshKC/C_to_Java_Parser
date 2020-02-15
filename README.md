@@ -4,6 +4,6 @@
 ## It contains basic code to translate C code to Java code.
 
 ## Contributors:
-### Ankit Kumar [github.com/Weap0nX]
+### Ankit Kumar [https://github.com/Weap0nX]
 ### Adarsh Chaudhary [https://github.com/AdarshKC]
 
