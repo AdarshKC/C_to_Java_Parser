@@ -5,6 +5,5 @@
 
 ## Contributors:
 ### Ankit Kumar [github.com/Weap0nX]
-### Adarsh Chaudhary [github.com/AdarshKC]
+### Adarsh Chaudhary [https://github.com/AdarshKC]
 
-[github.com/Weap0nX]
