@@ -5,7 +5,7 @@ from gen.CParser import CParser
 from gen.CVisitor import CVisitor
 import itertools
 
-result = open('result.c', 'w')
+result = open('result.java', 'w')
 contextList = []
 
 
@@ -34,16 +34,34 @@ def main(argv):
     argFlag = 0
     ignore = 0
     funFlag = 0
+    tempFlag = 0
+    printList = []
 
     while len(contextList) > 0:
 
         t = 0
         firstChild = contextList[0]
+        temp = firstChild
+
+        # if str(type(firstChild)) == "<class 'gen.CParser.CParser.PostfixExpressionContext'>":
+        #     tempFlag = 1
+        #     printList.append(firstChild)
+        #     while len(printList) > 0:
+        #         temp = printList[0]
+        #         p = 0
+        #         printList.pop(0)
+        #         if temp.getChildCount() > 0:
+        #             for x in range(0, temp.getChildCount()):
+        #                 printList.insert(p, temp.children[x])
+        #                 p += 1
+        #         elif temp.getChildCount() == 0:
+        #             if tempFlag == 1 and not(temp.getText() in ["printf"]):
+        #                 break
+        #             else:
+        #                 contextList.pop(0)
 
         if str(type(firstChild)) == "<class 'gen.CParser.CParser.FunctionDefinitionContext'>":
             funFlag = 1
-
-        # "<class 'gen.CParser.CParser.TypeSpecifierContext'>"
 
         contextList.pop(0)
         if firstChild.getChildCount() > 0:
@@ -63,14 +81,18 @@ def main(argv):
                 print(firstChild.getText(), file=result, end="\n")
                 tab += 1
                 beginFlag = 1
+            elif firstChild.getText() in ["printf"]:
+                print("System.out.print", file=result, end="")
+                beginFlag = 0
             elif firstChild.getText() in ["int", "void"] and funFlag == 1:
                 print("public static void", file=result, end=" ")
                 beginFlag = 0
                 funFlag = 0
             elif firstChild.getText() in ["main"]:
-                print(str(type(firstChild)))
                 print(firstChild.getText(), file=result, end=" ")
                 argFlag = 1
+            elif firstChild.getText() in ["argc"]:
+                print("args.length+1", file=result, end=" ")
             elif firstChild.getText() in ["}"]:
                 print(firstChild.getText(), file=result, end="\n")
                 tab -= 1
