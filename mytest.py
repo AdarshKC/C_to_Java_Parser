@@ -6,6 +6,7 @@ from gen.CVisitor import CVisitor
 import itertools
 
 result = open('result.java', 'w')
+output = open('output.java', 'w')
 contextList = []
 
 
@@ -15,7 +16,13 @@ class MyCVisitor(CVisitor):
 
     def visitTranslationUnit(self, ctx):
         contextList.append(ctx)
-        pass
+        if ctx.getChildCount() > 0:
+            print("hey")
+            print(ctx.getText(), file=output, end=" ")
+        else:
+            print(ctx.getText(), file=output, end=" ")
+            print("hi")
+            pass
 
 
 def main(argv):
@@ -35,6 +42,7 @@ def main(argv):
     ignore = 0
     funFlag = 0
     printFlag = 0
+    c = 0
     stringLiteral = ""
     variableList = []
     dataList = ["d", "c", "f"]
@@ -90,6 +98,7 @@ def main(argv):
                 ignore = 1
             elif firstChild.getText() in ["("]:
                 print(firstChild.getText(), file=result, end=" ")
+                c = -1
                 if printFlag == 1:
                     printFlag = 2
             # elif firstChild.getText() in [")"]:
@@ -129,7 +138,10 @@ def main(argv):
                         printFlag = 0
                         print(")", file=result, end="")
                     if firstChild.getText() not in [","]:
-                        variableList.append(firstChild.getText())
+                        variableList.insert(c, variableList[c]+firstChild.getText())
+                    else:
+                        variableList.append("")
+                        c += 1
                 else:
                     print(firstChild.getText(), file=result, end=" ")
                     beginFlag = 0
