@@ -105,21 +105,25 @@ def main(argv):
                 elif printFlag == 3:
                     temp1 = 0
                     if firstChild.getText() in [")"]:
-                        for var in stringLiteral :
-                            if temp1==1 :
-                                if var=="d" or var=="f" :
+                        for var in stringLiteral:
+                            if temp1 == 1:
+                                if var == "d" or var == "f":
                                     print("\");\n", file=result, end="")
+                                    for x in range(tab+1):
+                                        print("\t", file=result, end="")
                                     print("System.out.print(", file=result, end="")
                                     print(variableList[0] + ");\n", file=result, end="")
+                                    for x in range(tab+1):
+                                        print("\t", file=result, end="")
                                     print("System.out.print(\"", file=result, end="")
                                     temp1 = 0
                                     variableList.pop(0)
-                                else :
+                                else:
                                     print("%"+var, file=result, end="")
                                     temp1 = 0
-                            elif var == "%" :
+                            elif var == "%":
                                 temp1 = 1
-                            else :
+                            else:
                                 print(var, file=result, end="")
 
                         printFlag = 0
