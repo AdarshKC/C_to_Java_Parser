@@ -34,31 +34,18 @@ def main(argv):
     argFlag = 0
     ignore = 0
     funFlag = 0
-    tempFlag = 0
-    printList = []
+    printFlag = 0
+    stringLiteral = ""
+    variableList = []
+    dataList = ["d", "c", "f"]
 
     while len(contextList) > 0:
 
         t = 0
         firstChild = contextList[0]
-        temp = firstChild
 
-        # if str(type(firstChild)) == "<class 'gen.CParser.CParser.PostfixExpressionContext'>":
-        #     tempFlag = 1
-        #     printList.append(firstChild)
-        #     while len(printList) > 0:
-        #         temp = printList[0]
-        #         p = 0
-        #         printList.pop(0)
-        #         if temp.getChildCount() > 0:
-        #             for x in range(0, temp.getChildCount()):
-        #                 printList.insert(p, temp.children[x])
-        #                 p += 1
-        #         elif temp.getChildCount() == 0:
-        #             if tempFlag == 1 and not(temp.getText() in ["printf"]):
-        #                 break
-        #             else:
-        #                 contextList.pop(0)
+        # if printFlag == 2:
+        #     printFlag = 0
 
         if str(type(firstChild)) == "<class 'gen.CParser.CParser.FunctionDefinitionContext'>":
             funFlag = 1
@@ -83,6 +70,7 @@ def main(argv):
                 beginFlag = 1
             elif firstChild.getText() in ["printf"]:
                 print("System.out.print", file=result, end="")
+                printFlag = 1
                 beginFlag = 0
             elif firstChild.getText() in ["int", "void"] and funFlag == 1:
                 print("public static void", file=result, end=" ")
@@ -100,13 +88,45 @@ def main(argv):
             elif firstChild.getText() in ["("] and argFlag == 1:
                 print(firstChild.getText(), file=result, end="")
                 ignore = 1
-            elif firstChild.getText() in [")"] and argFlag == 1:
-                print("String[] args", file=result, end="")
+            elif firstChild.getText() in ["("]:
                 print(firstChild.getText(), file=result, end=" ")
+                if printFlag == 1:
+                    printFlag = 2
+            # elif firstChild.getText() in [")"]:
+            #     printFlag = 0
+            elif firstChild.getText() in [")"] and argFlag == 1:
+                print("String[] args )", file=result, end=" ")
                 ignore = 0
                 argFlag = 0
             else:
-                if ignore == 0:
+                if printFlag == 2:
+                    stringLiteral = firstChild.getText()
+                    printFlag = 3
+                elif printFlag == 3:
+                    temp1 = 0
+                    if firstChild.getText() in [")"]:
+                        for var in stringLiteral :
+                            if temp1==1 :
+                                if var=="d" or var=="f" :
+                                    print("\");\n", file=result, end="")
+                                    print("System.out.print(", file=result, end="")
+                                    print(variableList[0] + ");\n", file=result, end="")
+                                    print("System.out.print(\"", file=result, end="")
+                                    temp1 = 0
+                                    variableList.pop(0)
+                                else :
+                                    print("%"+var, file=result, end="")
+                                    temp1 = 0
+                            elif var == "%" :
+                                temp1 = 1
+                            else :
+                                print(var, file=result, end="")
+
+                        printFlag = 0
+                        print(")", file=result, end="")
+                    if firstChild.getText() not in [","]:
+                        variableList.append(firstChild.getText())
+                else:
                     print(firstChild.getText(), file=result, end=" ")
                     beginFlag = 0
 
