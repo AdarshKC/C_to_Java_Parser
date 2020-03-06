@@ -1,10 +1,6 @@
-#include <stdio.h>
-#include <string.h>
-
 int max(int x, int y)
 {
 	if(x > y)
-	{return x;}
 	return y;
 }
 
@@ -13,12 +9,18 @@ int max(int x, int y)
   It will be translated as "demo/demo_translation.c".
   There are also translations of full programs below.
 */
-int main(int argc, char** argv)
+void main(int argc, char** argv)
 {
+	int i = 2, j = 2, k =2;
 	if(2 >1)
 		{printf("true");}
 	else {printf("false");}
-  printf("Number of arguments: ");
-  printf("Without programname: ");
-  return 0;
+	while (j>i)
+	{j=j-1;
+	i=i+1;}
+	printf("Value of this %dAnd done.", i+j+k);
+	printf("Value of argument %dAnd done.", argc);
+	printf("Value of this %dAnd done.", i+j+k);
+
+	return 0;
 }
