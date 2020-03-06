@@ -2,6 +2,8 @@ int max(int x, int y)
 {
 	if(x > y)
 	return y;
+
+	return x;
 }
 
 /*
@@ -18,9 +20,8 @@ void main(int argc, char** argv)
 	while (j>i)
 	{j=j-1;
 	i=i+1;}
-	printf("Value of this %dAnd done.", i+j+k);
-	printf("Value of argument %dAnd done.", argc);
-	printf("Value of this %dAnd done.", i+j+k);
+	printf("Value of this %d And done.\n", i+j+k);
+	printf("Value of argument %d And done.\n", argc);
+	printf("Value of this %d And done.\n", i+j+k);
 
-	return 0;
 }
