@@ -6,7 +6,6 @@ from gen.CVisitor import CVisitor
 import itertools
 
 result = open('result.java', 'w')
-output = open('output.java', 'w')
 contextList = []
 
 
@@ -16,13 +15,7 @@ class MyCVisitor(CVisitor):
 
     def visitTranslationUnit(self, ctx):
         contextList.append(ctx)
-        if ctx.getChildCount() > 0:
-            print("hey")
-            print(ctx.getText(), file=output, end=" ")
-        else:
-            print(ctx.getText(), file=output, end=" ")
-            print("hi")
-            pass
+        pass
 
 
 def main(argv):
@@ -87,14 +80,12 @@ def main(argv):
             elif firstChild.getText() in ["main"]:
                 print(firstChild.getText(), file=result, end=" ")
                 argFlag = 1
-            elif firstChild.getText() in ["argc"]:
-                print("args.length+1", file=result, end=" ")
             elif firstChild.getText() in ["}"]:
                 print(firstChild.getText(), file=result, end="\n")
                 tab -= 1
                 beginFlag = 1
             elif firstChild.getText() in ["("] and argFlag == 1:
-                print(firstChild.getText(), file=result, end="")
+                print(firstChild.getText(), file=result, end=" ")
                 ignore = 1
             elif firstChild.getText() in ["("]:
                 print(firstChild.getText(), file=result, end=" ")
@@ -120,31 +111,35 @@ def main(argv):
                                     print("\");\n", file=result, end="")
                                     for x in range(tab+1):
                                         print("\t", file=result, end="")
-                                    print("System.out.print(", file=result, end="")
-                                    print(variableList[0] + ");\n", file=result, end="")
+                                    print("System.out.print(", file=result, end=" ")
+                                    if variableList[0] in ["argc"] :
+                                        print("args.length+1 ) ;\n", file=result, end="")
+                                    else:
+                                        print(variableList[0] + " );\n", file=result, end="")
                                     for x in range(tab+1):
                                         print("\t", file=result, end="")
-                                    print("System.out.print(\"", file=result, end="")
-                                    temp1 = 0
+                                    print("System.out.print( \"", file=result, end="")
                                     variableList.pop(0)
                                 else:
                                     print("%"+var, file=result, end="")
-                                    temp1 = 0
+                                temp1 = 0
                             elif var == "%":
                                 temp1 = 1
                             else:
                                 print(var, file=result, end="")
-
+                        variableList = [""]
+                        c = -1
                         printFlag = 0
                         print(")", file=result, end="")
-                    if firstChild.getText() not in [","]:
+                    if firstChild.getText() not in [",", ")"]:
                         variableList.insert(c, variableList[c]+firstChild.getText())
                     else:
                         variableList.append("")
                         c += 1
                 else:
-                    print(firstChild.getText(), file=result, end=" ")
-                    beginFlag = 0
+                    if ignore == 0:
+                        print(firstChild.getText(), file=result, end=" ")
+                        beginFlag = 0
 
     print("}", file=result, end="")
 
