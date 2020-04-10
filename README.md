@@ -7,5 +7,7 @@
 ### Ankit Kumar [https://github.com/Weap0nX]
 ### Adarsh Chaudhary [https://github.com/AdarshKC]
 
+#### INPUT 
 ![INPUT FILE](https://github.com/AdarshKC/C_to_Java_Parser/blob/master/input.jpeg)
+#### OUTPUT 
 ![OUTPUT FILE](https://github.com/AdarshKC/C_to_Java_Parser/blob/master/output.jpeg)
