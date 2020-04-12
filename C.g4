@@ -506,7 +506,7 @@ header
 	;
 
 include
-	:	'#include' '<' LIB* '>'
+	:	'#include' Whitespace? '<' LIB* '>' | '#include' Whitespace? '"' LIB* '"'
 	;
 
 LIB
@@ -869,10 +869,10 @@ SChar
     |   '\\\r\n' // Added line
     ;
 
-ComplexDefine
-    :   '#' Whitespace? 'define'  ~[#]*
-        -> skip
-    ;
+//ComplexDefine
+//    :   '#' Whitespace? 'define'  ~[#]*
+//        -> skip
+//    ;
 
 IncludeDirective
     :   '#' Whitespace? 'include' Whitespace? (('"' ~[\r\n]* '"') | ('<' ~[\r\n]* '>' )) Whitespace? Newline
