@@ -35,6 +35,7 @@ def main(argv):
     ignore = 0                              # java translation for command line input
     funFlag = 0                             # for return type of functions
     printFlag = 0                           # to handle print statements
+    forFlag = 0                             # to handle for loop
     c = 0                                   # index of variable list
     stringLiteral = ""                      # message part in print statements
     variableList = []                       # variables part in print statements
@@ -45,8 +46,13 @@ def main(argv):
         t = 0
         firstChild = contextList[0]
 
+        print(str(firstChild.getText()) + str(type(firstChild)))
+
         if str(type(firstChild)) == "<class 'gen.CParser.CParser.FunctionDefinitionContext'>":
             funFlag = 1
+
+        if firstChild.getText() in ["for"]:
+            forFlag += 1
 
         contextList.pop(0)
         if firstChild.getChildCount() > 0:
@@ -60,9 +66,14 @@ def main(argv):
                 if (firstChild.getText() != "}") and beginFlag == 1:
                     print("\t", file=result, end="")
             if firstChild.getText() in [";"]:               # new line begins after this...
-                print(firstChild.getText(), file=result, end="\n")
-                beginFlag = 1
+                if forFlag % 2 == 0:
+                    print(firstChild.getText(), file=result, end="\n")
+                    beginFlag = 1
+                else:
+                    print(firstChild.getText(), file=result, end=" ")
             elif firstChild.getText() in ["{"]:             # new line begins after this...
+                if forFlag != 0:
+                    forFlag += 1
                 print(firstChild.getText(), file=result, end="\n")
                 tab += 1
                 beginFlag = 1
@@ -78,6 +89,8 @@ def main(argv):
                 print(firstChild.getText(), file=result, end=" ")
                 argFlag = 1
             elif firstChild.getText() in ["}"]:             # new line begins after this...
+                if forFlag != 0:
+                    forFlag -= 2
                 print(firstChild.getText(), file=result, end="\n")
                 tab -= 1
                 beginFlag = 1
