@@ -37,6 +37,7 @@ def main(argv):
     printFlag = 0                           # to handle print statements
     forFlag = 0                             # to handle for loop
     c = 0                                   # index of variable list
+    declarationFlag = 0                     # to handle newline in declaration of arrays etc
     stringLiteral = ""                      # message part in print statements
     variableList = []                       # variables part in print statements
     dataList = ["d", "c", "f", "s"]         # popular data types in c like %d, %c, %f, %s
@@ -46,13 +47,16 @@ def main(argv):
         t = 0
         firstChild = contextList[0]
 
-        print(str(firstChild.getText()) + str(type(firstChild)))
+        # print(str(firstChild.getText()) + str(type(firstChild)))
 
         if str(type(firstChild)) == "<class 'gen.CParser.CParser.FunctionDefinitionContext'>":
             funFlag = 1
 
+        if str(type(firstChild)) == "<class 'gen.CParser.CParser.DeclarationContext'>":
+            declarationFlag += 1
+
         if firstChild.getText() in ["for"]:
-            forFlag += 1
+            forFlag += 2
 
         contextList.pop(0)
         if firstChild.getChildCount() > 0:
@@ -66,17 +70,20 @@ def main(argv):
                 if (firstChild.getText() != "}") and beginFlag == 1:
                     print("\t", file=result, end="")
             if firstChild.getText() in [";"]:               # new line begins after this...
-                if forFlag % 2 == 0:
+                if forFlag == 0:
                     print(firstChild.getText(), file=result, end="\n")
                     beginFlag = 1
                 else:
+                    forFlag -= 1
                     print(firstChild.getText(), file=result, end=" ")
+                declarationFlag = 0
             elif firstChild.getText() in ["{"]:             # new line begins after this...
-                if forFlag != 0:
-                    forFlag += 1
-                print(firstChild.getText(), file=result, end="\n")
-                tab += 1
-                beginFlag = 1
+                if declarationFlag == 0:
+                    print(firstChild.getText(), file=result, end="\n")
+                    tab += 1
+                    beginFlag = 1
+                else:
+                    print(firstChild.getText(), file=result, end=" ")
             elif firstChild.getText() in ["printf"]:        # translate print statement
                 print("System.out.print", file=result, end="")
                 printFlag = 1
@@ -89,11 +96,12 @@ def main(argv):
                 print(firstChild.getText(), file=result, end=" ")
                 argFlag = 1
             elif firstChild.getText() in ["}"]:             # new line begins after this...
-                if forFlag != 0:
-                    forFlag -= 2
-                print(firstChild.getText(), file=result, end="\n")
-                tab -= 1
-                beginFlag = 1
+                if declarationFlag == 0:
+                    print(firstChild.getText(), file=result, end="\n")
+                    tab -= 1
+                    beginFlag = 1
+                else:
+                    print(firstChild.getText(), file=result, end=" ")
             elif firstChild.getText() in ["("] and argFlag == 1:
                 print(firstChild.getText(), file=result, end=" ")
                 ignore = 1
