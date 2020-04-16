@@ -497,21 +497,8 @@ jumpStatement
     ;
 
 compilationUnit
-    :   header translationUnit? EOF
+    :  translationUnit? EOF
     ;
-
-header
-	: include*
-	|
-	;
-
-include
-	:	'#include' Whitespace? '<' LIB* '>' | '#include' Whitespace? '"' LIB* '"'
-	;
-
-LIB
-	:	[.]
-	;
 
 translationUnit
     :   externalDeclaration
@@ -522,7 +509,17 @@ externalDeclaration
     :   functionDefinition
     |   declaration
     |   ';' // stray ;
+    |	include
     ;
+
+header
+	: include+
+	;
+
+include
+	:	'#include'  (('"' ~('`')* '"') | ('<' ~('`')* '>' ))
+	;
+
 
 functionDefinition
     :   declarationSpecifiers? declarator declarationList? compoundStatement
@@ -874,10 +871,10 @@ SChar
 //        -> skip
 //    ;
 
-IncludeDirective
-    :   '#' Whitespace? 'include' Whitespace? (('"' ~[\r\n]* '"') | ('<' ~[\r\n]* '>' )) Whitespace? Newline
-        -> skip
-    ;
+//IncludeDirective
+//    :   '#' Whitespace? 'include' Whitespace? (('"' ~[\r\n]* '"') | ('<' ~[\r\n]* '>' )) Whitespace? Newline
+//        -> skip
+//    ;
 
 // ignore the following asm blocks:
 /*
