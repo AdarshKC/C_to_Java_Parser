@@ -18,7 +18,17 @@ class MyCVisitor(CVisitor):
         pass
 
 
+class coverCases():
+    def func(self,adarsh):
+        print("public static " + adarsh, file=result, end=" ")
+
+    def spaceGeneration(self,tab):                  # for proper indentations...
+        for x in range(tab):
+            print("\t", file=result, end="")
+
+
 def main(argv):
+
     inputFile = FileStream(argv[1])
     lexer = CLexer(inputFile)
     stream = CommonTokenStream(lexer)
@@ -29,6 +39,7 @@ def main(argv):
     v.visit(tree)
 
     print("package demo;\n\npublic class DemoTranslation {\n", file=result, end="")  # default format of java program
+
     tab = 0                                 # for handling indentation
     beginFlag = 1                           # to check for line beginning
     argFlag = 0                             # for command line input
@@ -47,8 +58,6 @@ def main(argv):
         t = 0
         firstChild = contextList[0]
 
-        # print(str(firstChild.getText()) + str(type(firstChild)))
-
         if str(type(firstChild)) == "<class 'gen.CParser.CParser.FunctionDefinitionContext'>":
             funFlag = 1
 
@@ -59,14 +68,15 @@ def main(argv):
             forFlag += 2
 
         contextList.pop(0)
+        instance_ = coverCases()
+
         if firstChild.getChildCount() > 0:
             for x in range(0, firstChild.getChildCount()):
                 contextList.insert(t, firstChild.children[x])
                 t = t + 1
         elif firstChild.getChildCount() == 0:   # enters when leaf is found...
             if beginFlag == 1:
-                for x in range(tab):  # for proper indentations...
-                    print("\t", file=result, end="")
+                instance_.spaceGeneration(tab)
                 if (firstChild.getText() != "}") and beginFlag == 1:
                     print("\t", file=result, end="")
             if firstChild.getText() in [";"]:               # new line begins after this...
@@ -127,15 +137,13 @@ def main(argv):
                             if temp1 == 1:
                                 if var in dataList:     # if data type is found
                                     print("\");\n", file=result, end="")
-                                    for x in range(tab+1):              # for proper indentations...
-                                        print("\t", file=result, end="")
+                                    instance_.spaceGeneration(tab+1) # for proper indentations...
                                     print("System.out.print(", file=result, end=" ")
                                     if variableList[0] in ["argc"]:     # command line input translation...
                                         print("args.length+1 ) ;\n", file=result, end="")
-                                    else:                               # for proper indentation
+                                    else:
                                         print(variableList[0] + " );\n", file=result, end="")
-                                    for x in range(tab+1):              # for proper indentation
-                                        print("\t", file=result, end="")
+                                    instance_.spaceGeneration(tab+1) # for proper indentations...
                                     print("System.out.print( \"", file=result, end="")
                                     variableList.pop(0)
                                 else:
