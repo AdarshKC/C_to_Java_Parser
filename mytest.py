@@ -7,7 +7,8 @@ import itertools
 
 result = open('result.java', 'w')
 contextList = []
-
+dataList = ["d", "c", "f", "s"]         # popular data types in c like %d, %c, %f, %s
+ignoreList = ["unsigned"]
 
 class MyCVisitor(CVisitor):
     def __init__(self):
@@ -26,6 +27,10 @@ class coverCases():
         for x in range(tab):
             print("\t", file=result, end="")
 
+    def checkIgnore(self,var):
+        if var in ignoreList:  # new line begins after this...
+            return 1
+        return 0
 
 def main(argv):
 
@@ -51,7 +56,6 @@ def main(argv):
     declarationFlag = 0                     # to handle newline in declaration of arrays etc
     stringLiteral = ""                      # message part in print statements
     variableList = []                       # variables part in print statements
-    dataList = ["d", "c", "f", "s"]         # popular data types in c like %d, %c, %f, %s
 
     while len(contextList) > 0:             # runs till we found node in the traversal tree...
 
@@ -79,7 +83,9 @@ def main(argv):
                 instance_.spaceGeneration(tab)
                 if (firstChild.getText() != "}") and beginFlag == 1:
                     print("\t", file=result, end="")
-            if firstChild.getText() in [";"]:               # new line begins after this...
+            if instance_.checkIgnore(firstChild.getText()) :
+                continue
+            elif firstChild.getText() in [";"]:               # new line begins after this...
                 if forFlag == 0:
                     print(firstChild.getText(), file=result, end="\n")
                     beginFlag = 1
