@@ -10,6 +10,7 @@ contextList = []
 dataList = ["d", "c", "f", "s"]         # popular data types in c like %d, %c, %f, %s
 ignoreList = ["unsigned"]
 
+
 class MyCVisitor(CVisitor):
     def __init__(self):
         pass
@@ -19,21 +20,28 @@ class MyCVisitor(CVisitor):
         pass
 
 
-class coverCases():
-    def printWithoutNewLine(self,var):              # print the word without newline
+class CoverCases:
+    def printWithoutNewLine(self, var):              # print the word without newline
         print(var, file=result, end=" ")
 
     def printWithNewLine(self, var):                # print the word with newline
         print(var, file=result, end="\n")
 
-    def spaceGeneration(self,tab):                  # for proper indentations...
+    def spaceGeneration(self, tab):                  # for proper indentations...
         for x in range(tab):
             print("\t", file=result, end="")
 
-    def checkIgnore(self,var):
+    def checkIgnore(self, var):
         if var in ignoreList:                       # write nothing if found this...
             return 1
         return 0
+
+
+class Header:
+    def include_library(self, var):
+        # to be implemented later...
+        return
+
 
 def main(argv):
 
@@ -60,7 +68,8 @@ def main(argv):
     stringLiteral = ""                      # message part in print statements...
     variableList = []                       # variables part in print statements...
 
-    solve = coverCases()                    #instance of class to access class functions...
+    solve = CoverCases()                    # instance of class to access class functions...
+    header = Header()                       # instance of class to handle header files...
 
     while len(contextList) > 0:             # runs till we found node in the traversal tree...
 
@@ -68,12 +77,18 @@ def main(argv):
         firstChild = contextList[0]
         contextList.pop(0)
 
+        # print(str(firstChild.getText()) + "-- " + str(type(firstChild)))
+
         if str(type(firstChild)) == "<class 'gen.CParser.CParser.FunctionDefinitionContext'>":
             funFlag = 1
         if str(type(firstChild)) == "<class 'gen.CParser.CParser.DeclarationContext'>":
             declarationFlag += 1
         if firstChild.getText() in ["for"]:
             forFlag += 2
+
+        if str(type(firstChild)) == "<class 'gen.CParser.CParser.IncludeContext'>":
+            header.include_library(firstChild)
+            continue
 
         if firstChild.getChildCount() > 0:
             for x in range(0, firstChild.getChildCount()):
@@ -85,7 +100,7 @@ def main(argv):
                 solve.spaceGeneration(tab)
                 if (word != "}") and beginFlag == 1:
                     print("\t", file=result, end="")
-            if solve.checkIgnore(word) :
+            if solve.checkIgnore(word):
                 continue
             elif word in [";"]:               # new line begins after this...
                 if forFlag == 0:
