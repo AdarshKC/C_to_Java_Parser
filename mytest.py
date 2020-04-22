@@ -67,9 +67,13 @@ def main(argv):
     declarationFlag = 0                     # to handle newline in declaration of arrays etc...
     stringLiteral = ""                      # message part in print statements...
     variableList = []                       # variables part in print statements...
-
     solve = CoverCases()                    # instance of class to access class functions...
     header = Header()                       # instance of class to handle header files...
+
+    mainFlag = 0
+    skipFlag = 0
+    defFlag = 0
+    tempString = ""
 
     while len(contextList) > 0:             # runs till we found node in the traversal tree...
 
@@ -86,16 +90,43 @@ def main(argv):
         if firstChild.getText() in ["for"]:
             forFlag += 2
 
+        if str(type(firstChild)) == "<class 'gen.CParser.CParser.ExternalDeclarationContext'>":
+            if defFlag != 0:
+                solve.spaceGeneration(tab + 1)
+                print(tempString, file=result, end="\n")
+                tempString = ""
+            defFlag += 1
+            declarationFlag = 0
+            skipFlag = 0
+        if str(type(firstChild)) == "<class 'gen.CParser.CParser.FunctionDefinitionContext'>":
+            defFlag = 0
+            skipFlag = 0
+
         if str(type(firstChild)) == "<class 'gen.CParser.CParser.IncludeContext'>":
             header.include_library(firstChild)
             continue
 
         if firstChild.getChildCount() > 0:
+            if str(type(firstChild)) == "<class 'gen.CParser.CParser.ParameterTypeListContext'>" and defFlag != 0:
+                tempString = ""
+                skipFlag += 1
+                defFlag = 0
+                continue
+            if skipFlag != 0:
+                tempString = ""
+                continue
             for x in range(0, firstChild.getChildCount()):
                 contextList.insert(t, firstChild.children[x])
                 t = t + 1
         elif firstChild.getChildCount() == 0:   # enters when leaf is found...
             word = firstChild.getText()
+            if skipFlag != 0:
+                tempString = ""
+                continue
+            if defFlag != 0:
+                # print(tempString, end="/")
+                tempString += word + " "
+                continue
             if beginFlag == 1:
                 solve.spaceGeneration(tab)
                 if (word != "}") and beginFlag == 1:
@@ -127,6 +158,8 @@ def main(argv):
                 funFlag = 0
             elif word in ["main"]:
                 solve.printWithoutNewLine(word)
+                mainFlag += 1
+
                 argFlag = 1
             elif word in ["}"]:             # new line begins after this...
                 if declarationFlag == 0:
