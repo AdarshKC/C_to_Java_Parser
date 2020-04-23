@@ -31,6 +31,11 @@ class CoverCases:
         for x in range(tab):
             print("\t", file=result, end="")
 
+    def removeLastChar(self):
+        # print("hey")
+        size = result.tell()
+        result.truncate(size - 1)
+
     def checkIgnore(self, var):
         if var in ignoreList:                       # write nothing if found this...
             return 1
@@ -134,6 +139,7 @@ def main(argv):
             if solve.checkIgnore(word):
                 continue
             elif word in [";"]:               # new line begins after this...
+                solve.removeLastChar()
                 if forFlag == 0:
                     solve.printWithNewLine(word)
                     beginFlag = 1
@@ -180,6 +186,12 @@ def main(argv):
                 print("String[] args )", file=result, end=" ")
                 ignore = 0
                 argFlag = 0
+            elif word in ["++", "--"]:
+                solve.removeLastChar()
+                solve.printWithoutNewLine(word)
+            elif word in [","] and printFlag == 0:
+                solve.removeLastChar()
+                solve.printWithoutNewLine(word)
             else:                                       # translation of print arguments and messages(differently)...
                 if printFlag == 2:                      # store message of print statement...
                     stringLiteral = word
