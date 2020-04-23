@@ -32,9 +32,14 @@ class CoverCases:
             print("\t", file=result, end="")
 
     def removeLastChar(self):
-        # print("hey")
         size = result.tell()
-        result.truncate(size - 1)
+        with open("result.java", "r") as f:
+            file_str = str(f.read())
+            f.close()
+        last_chr = file_str[size-1]
+        # print(last_chr)
+        if last_chr == " ":
+            result.truncate(size - 1)
 
     def checkIgnore(self, var):
         if var in ignoreList:                       # write nothing if found this...
