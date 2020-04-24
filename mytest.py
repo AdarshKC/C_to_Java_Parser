@@ -5,7 +5,7 @@ from gen.CParser import CParser
 from gen.CVisitor import CVisitor
 import itertools
 
-result = open('result.java', 'w')
+result = open('result.java', 'w')       # opening output file to write
 contextList = []
 dataList = ["d", "c", "f", "s"]         # popular data types in c like %d, %c, %f, %s
 ignoreList = ["unsigned"]
@@ -31,14 +31,13 @@ class CoverCases:
         for x in range(tab):
             print("\t", file=result, end="")
 
-    def removeLastChar(self):
+    def removeLastChar(self):                       # remove space before [++] [,] [;] [--]
         size = result.tell()
         with open("result.java", "r") as f:
             file_str = str(f.read())
             f.close()
         last_chr = file_str[size-1]
-        # print(last_chr)
-        if last_chr == " ":
+        if last_chr == " ":                         # if last character is whitespace the remove
             result.truncate(size - 1)
 
     def checkIgnore(self, var):
@@ -47,7 +46,7 @@ class CoverCases:
         return 0
 
 
-class Header:
+class Header:                                       # to handle header files
     def include_library(self, var):
         # to be implemented later...
         return
@@ -93,14 +92,14 @@ def main(argv):
 
         # print(str(firstChild.getText()) + "-- " + str(type(firstChild)))
 
-        if str(type(firstChild)) == "<class 'gen.CParser.CParser.FunctionDefinitionContext'>":
+        if str(type(firstChild)) == "<class 'gen.CParser.CParser.FunctionDefinitionContext'>":  # handle functions
             funFlag = 1
-        if str(type(firstChild)) == "<class 'gen.CParser.CParser.DeclarationContext'>":
+        if str(type(firstChild)) == "<class 'gen.CParser.CParser.DeclarationContext'>":     # to handle array list
             declarationFlag += 1
-        if firstChild.getText() in ["for"]:
+        if firstChild.getText() in ["for"]:                                                 # to handle for loop
             forFlag += 2
 
-        if str(type(firstChild)) == "<class 'gen.CParser.CParser.ExternalDeclarationContext'>":
+        if str(type(firstChild)) == "<class 'gen.CParser.CParser.ExternalDeclarationContext'>":     # for function declaration
             if defFlag != 0:
                 solve.spaceGeneration(tab + 1)
                 print(tempString, file=result, end="\n")
@@ -108,11 +107,11 @@ def main(argv):
             defFlag += 1
             declarationFlag = 0
             skipFlag = 0
-        if str(type(firstChild)) == "<class 'gen.CParser.CParser.FunctionDefinitionContext'>":
+        if str(type(firstChild)) == "<class 'gen.CParser.CParser.FunctionDefinitionContext'>":      # check if function
             defFlag = 0
             skipFlag = 0
 
-        if str(type(firstChild)) == "<class 'gen.CParser.CParser.IncludeContext'>":
+        if str(type(firstChild)) == "<class 'gen.CParser.CParser.IncludeContext'>":     # check if header file
             header.include_library(firstChild)
             continue
 
@@ -122,28 +121,27 @@ def main(argv):
                 skipFlag += 1
                 defFlag = 0
                 continue
-            if skipFlag != 0:
+            if skipFlag != 0:           # skip function declaration
                 tempString = ""
                 continue
-            for x in range(0, firstChild.getChildCount()):
+            for x in range(0, firstChild.getChildCount()):      # add child of node for next traversal
                 contextList.insert(t, firstChild.children[x])
                 t = t + 1
-        elif firstChild.getChildCount() == 0:   # enters when leaf is found...
+        elif firstChild.getChildCount() == 0:                       # enters when leaf is found...
             word = firstChild.getText()
-            if skipFlag != 0:
+            if skipFlag != 0:                                       # skip function declaration
                 tempString = ""
                 continue
             if defFlag != 0:
-                # print(tempString, end="/")
                 tempString += word + " "
                 continue
-            if beginFlag == 1:
+            if beginFlag == 1:                                      # to add indentation
                 solve.spaceGeneration(tab)
                 if (word != "}") and beginFlag == 1:
                     print("\t", file=result, end="")
             if solve.checkIgnore(word):
                 continue
-            elif word in [";"]:               # new line begins after this...
+            elif word in [";"]:                                     # new line begins after this...
                 solve.removeLastChar()
                 if forFlag == 0:
                     solve.printWithNewLine(word)
@@ -152,18 +150,18 @@ def main(argv):
                     forFlag -= 1
                     solve.printWithoutNewLine(word)
                 declarationFlag = 0
-            elif word in ["{"]:             # new line begins after this...
+            elif word in ["{"]:                                     # new line begins after this...
                 if declarationFlag == 0:
                     solve.printWithNewLine(word)
                     tab += 1
                     beginFlag = 1
                 else:
                     solve.printWithoutNewLine(word)
-            elif word in ["printf"]:        # translate print statement...
+            elif word in ["printf"]:                                # translate print statement...
                 print("System.out.print", file=result, end="")
                 printFlag = 1
                 beginFlag = 0
-            elif word in ["int", "void"] and funFlag == 1:  # handle return type of functions...
+            elif word in ["int", "void"] and funFlag == 1:          # handle return type of functions...
                 print("public static " + word, file=result, end=" ")
                 beginFlag = 0
                 funFlag = 0
@@ -172,7 +170,7 @@ def main(argv):
                 mainFlag += 1
 
                 argFlag = 1
-            elif word in ["}"]:             # new line begins after this...
+            elif word in ["}"]:                                     # new line begins after this...
                 if declarationFlag == 0:
                     solve.printWithNewLine(word)
                     tab -= 1
@@ -233,7 +231,7 @@ def main(argv):
                     else:
                         variableList.append("")
                         c += 1
-                else:
+                else:                                                               # print rest of the program
                     if ignore == 0:
                         solve.printWithoutNewLine(word)
                         beginFlag = 0
